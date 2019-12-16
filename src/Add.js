@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
 
 var moment = require('moment');
 
@@ -99,6 +100,8 @@ class Add extends Component {
             })
 
             this.setState({ todos: newArray, todo: '', date: '', tag: '' });
+
+            this.props.setTodo(newArray);
 
             AsyncStorage.setItem('todos', JSON.stringify(newArray));
 
@@ -213,6 +216,18 @@ class Add extends Component {
     }
 }
 
+function mapStateToProps(state){
+    return{
+        todos: state.todos
+    }
+}
+
+function mapDispatchToProps(dispatch){
+    return{
+        setTodo: (value) => dispatch({ type: 'SET_TODO', value })
+    }
+}
+
 const styles = StyleSheet.create({
     header: {
         backgroundColor: main, paddingHorizontal: height * 0.02, paddingTop: height * 0.06, paddingBottom: height * 0.01
@@ -249,4 +264,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Add;
+export default connect(mapStateToProps, mapDispatchToProps)(Add);

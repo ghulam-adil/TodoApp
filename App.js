@@ -6,7 +6,8 @@ import { createStore } from 'redux';
 import AppNavigator from './src/AppNavigator';
 
 const initialState = {
-  name: ''
+  name: '',
+  todos: []
 }
 
 const reducer = (state = initialState, action) => {
@@ -15,6 +16,10 @@ const reducer = (state = initialState, action) => {
     case 'SET_NAME':
       return {
         name: action.value
+      }
+    case 'SET_TODO':
+      return {
+        todos: action.value
       }
   }
   return state;

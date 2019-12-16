@@ -52,6 +52,7 @@ class Login extends Component {
                         <TextInput 
                             placeholder='Name'
                             onChangeText={(name) => this.setState({ name })}
+                            value={this.state.name}
                         />
                     </View>
 
@@ -76,7 +77,7 @@ function mapStateToProps(state){
 
 function mapDispatchToProps(dispatch){
     return{
-        setName: (name) => dispatch({ type: 'SET_NAME', value: name })
+        setName: (value) => dispatch({ type: 'SET_NAME', value })
     }
 }
 

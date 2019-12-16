@@ -4,6 +4,7 @@ import { View, Text, Dimensions, StyleSheet, FlatList, Alert } from 'react-nativ
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage';
 import Swipeout from 'react-native-swipeout';
+import { connect } from 'react-redux';
 
 var moment = require('moment');
 
@@ -62,7 +63,6 @@ class FlatListItem extends Component {
                                 {text: 'Yes', onPress: () => {
                                     
                                     this.props.parentFlatList.deleteRow(this.props.index);
-
                                     this.props.parentFlatList.refreshFLatList(deletingRow);
                                 }},
                             ],
@@ -124,14 +124,12 @@ class Feed extends Component {
     }
 
     state = {
-        todos: [],
         deletedRowKey: null,
     }
 
     componentDidMount() {
         AsyncStorage.getItem('todos').then(value => {
-            console.log(JSON.parse(value));
-            this.setState({ todos: JSON.parse(value) });
+            this.props.setTodo(JSON.parse(value));
         })
     }
 
@@ -144,21 +142,14 @@ class Feed extends Component {
     }
 
     deleteRow = (index) => {
-        this.state.todos.splice(index, 1);
-        AsyncStorage.setItem('todos', JSON.stringify(this.state.todos));
+        this.props.todos.splice(index, 1);
+        AsyncStorage.setItem('todos', JSON.stringify(this.props.todos));
     }
 
     handleComplete = (index) => {
-        const newArray = [...this.state.todos];
+        const newArray = [...this.props.todos];
         newArray[index].isComplete = true;
-        this.setState({ todos: newArray });
-        AsyncStorage.setItem('todos', JSON.stringify(this.state.todos));
-
-        // AsyncStorage.getItem('todos').then(value => {
-        //     console.log(JSON.parse(value));
-        //     this.setState({ todos: JSON.parse(value) });
-        // })
-
+        AsyncStorage.setItem('todos', JSON.stringify(newArray));
     }
 
     render() {
@@ -171,12 +162,11 @@ class Feed extends Component {
                 </View>
 
                 <FlatList 
-                    data={this.state.todos}
+                    data={this.props.todos}
                     renderItem={({ item, index }) => 
                         <FlatListItem 
                             item={item} 
                             index={index} 
-                            // data={this.state.todos} 
                             parentFlatList={this} 
                         />
                     }
@@ -185,6 +175,18 @@ class Feed extends Component {
                 
             </View>
         )
+    }
+}
+
+function mapStateToProps(state){
+    return{
+        todos: state.todos
+    }
+}
+
+function mapDispatchToProps(dispatch){
+    return{
+        setTodo: (value) => dispatch({ type: 'SET_TODO', value })
     }
 }
 
@@ -213,4 +215,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Feed;
+export default connect(mapStateToProps, mapDispatchToProps)(Feed);
